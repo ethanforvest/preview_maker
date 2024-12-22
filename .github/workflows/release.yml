@@ -3,11 +3,10 @@
 
 name: Go
 
+# .github/workflows/release.yaml
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+  release:
+    types: [created]
 
 permissions:
     contents: write
