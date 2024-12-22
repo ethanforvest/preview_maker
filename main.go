@@ -37,7 +37,7 @@ func getVideoDuration(videoPath string) (float64, error) {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Printf("USAGE: %s <file_path>", os.Args[0])
+		fmt.Printf("USAGE: %s <file_path>\n", os.Args[0])
 		os.Exit(1)
 	}
 
