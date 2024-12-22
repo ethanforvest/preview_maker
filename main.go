@@ -73,6 +73,22 @@ func main() {
 		tempFile := fmt.Sprintf("clip_%d.mp4", i+1)
 		tempFiles = append(tempFiles, tempFile)
 
+		// Add transition only to the AUDIO and not video
+		if i == 0 {
+			// Adjust fade start time relative to each clip's start time
+			afade := fmt.Sprintf("afade=t=in:st=%.2f:d=0.5", startTime) // Start audio fade relative to clip start
+
+			cmd := fmt.Sprintf("ffmpeg -i %s -af %s -ss %.2f -t %d -c:v libx264 -crf 18 -preset slow -c:a aac -b:a 192k -y %s",
+				videoPath, afade, startTime, clipDuration, tempFile)
+
+			if err := runCommand(cmd); err != nil {
+				fmt.Println("Error creating clip:", err)
+				return
+			}
+
+			continue
+		}
+
 		// Adjust fade start time relative to each clip's start time
 		vfade := fmt.Sprintf("fade=t=in:st=%.2f:d=0.5", startTime)  // Start fade relative to clip start
 		afade := fmt.Sprintf("afade=t=in:st=%.2f:d=0.5", startTime) // Start audio fade relative to clip start
@@ -110,7 +126,11 @@ func main() {
 
 	// Cleanup temporary files
 clean:
-	os.Remove(mergeFile)
+	err = os.Remove(mergeFile)
+	if err != nil {
+		fmt.Println("Error removing file list: ", err)
+	}
+
 	for _, tempFile := range tempFiles {
 		os.Remove(tempFile)
 	}
