@@ -77,7 +77,7 @@ func main() {
 		tempFile := fmt.Sprintf("clip_%d.mp4", i+1)
 		tempFiles = append(tempFiles, tempFile)
 
-		// Add transition only to the AUDIO and not video
+		// Add transition only to the first clip's AUDIO and not video
 		if i == 0 {
 			// Adjust fade start time relative to each clip's start time
 			afade := fmt.Sprintf("afade=t=in:st=%.2f:d=0.5", startTime) // Start audio fade relative to clip start
