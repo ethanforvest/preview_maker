@@ -1,12 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/alexflint/go-arg"
 )
 
 // Helper function to execute ffmpeg commands
@@ -35,27 +36,26 @@ func getVideoDuration(videoPath string) (float64, error) {
 	return duration, nil
 }
 
+var args struct {
+	File       string  `arg:"positional" help:"The File To Process"`
+	TimeStamps []uint8 `arg:"-t" help:"The TimeStamps To Process ex: -t 10 20 70 (10% 20% 70%) of the file"`
+	Duration   int     `default:"10" arg:"-d" help:"The Duration of each clip in seconds"`
+}
+
+func init() {
+	args.TimeStamps = []uint8{10, 50, 90}
+}
+
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Printf("USAGE: %s <file_path>\n", os.Args[0])
-		os.Exit(1)
-	}
-
-	video_path_input := os.Args[1]
-
-	reader := bufio.NewReader(os.Stdin)
+	arg.MustParse(&args)
+	// fmt.Println(args.File, args.TimeStamps)
+	video_path_input := args.File
 
 	// Step 1: Get video file path
 	videoPath := strings.TrimSpace(video_path_input)
 
 	// Step 2: Get duration of each clip
-	fmt.Print("Enter the duration (in seconds) for each clip: ")
-	durationInput, _ := reader.ReadString('\n')
-	clipDuration, err := strconv.Atoi(strings.TrimSpace(durationInput))
-	if err != nil {
-		fmt.Println("Invalid duration:", err)
-		return
-	}
+	clipDuration := args.Duration
 
 	// Step 3: Get video duration
 	videoDuration, err := getVideoDuration(videoPath)
@@ -64,8 +64,12 @@ func main() {
 		return
 	}
 
-	// Step 4: Define clip start points (percentages)
-	clipPoints := []float64{0.1, 0.5, 0.9}
+	// Step 4: Define/Parse clip start points (percentages)
+	clipPoints := []float64{}
+	for _, point := range args.TimeStamps {
+		clipPoints = append(clipPoints, float64(point)/100)
+	}
+
 	tempFiles := []string{}
 
 	for i, point := range clipPoints {
