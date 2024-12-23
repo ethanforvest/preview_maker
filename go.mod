@@ -1,4 +1,4 @@
-module preview-maker
+module preview
 
 go 1.23.3
 
