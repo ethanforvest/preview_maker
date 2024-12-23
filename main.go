@@ -11,10 +11,9 @@ import (
 )
 
 // Helper function to execute ffmpeg commands
-func runCommand(cmd string) error {
+func runCommand(cmd []string) error {
 	fmt.Println("Running command:", cmd)
-	parts := strings.Split(cmd, " ")
-	err := exec.Command(parts[0], parts[1:]...).Run()
+	err := exec.Command(cmd[0], cmd[1:]...).Run()
 	if err != nil {
 		return fmt.Errorf("command failed: %w", err)
 	}
@@ -82,8 +81,7 @@ func main() {
 			// Adjust fade start time relative to each clip's start time
 			afade := fmt.Sprintf("afade=t=in:st=%.2f:d=0.5", startTime) // Start audio fade relative to clip start
 
-			cmd := fmt.Sprintf("ffmpeg -i %s -af %s -ss %.2f -t %d -c:v libx264 -crf 18 -preset slow -c:a aac -b:a 192k -y %s",
-				videoPath, afade, startTime, clipDuration, tempFile)
+			cmd := []string{"ffmpeg", "-i", videoPath, "-af", afade, "-ss", fmt.Sprintf("%.2f", startTime), "-t", fmt.Sprintf("%d", clipDuration), "-c:v", "libx264", "-crf", "18", "-preset", "slow", "-c:a", "aac", "-b:a", "192k", "-y", tempFile}
 
 			if err := runCommand(cmd); err != nil {
 				fmt.Println("Error creating clip:", err)
@@ -97,8 +95,7 @@ func main() {
 		vfade := fmt.Sprintf("fade=t=in:st=%.2f:d=0.5", startTime)  // Start fade relative to clip start
 		afade := fmt.Sprintf("afade=t=in:st=%.2f:d=0.5", startTime) // Start audio fade relative to clip start
 
-		cmd := fmt.Sprintf("ffmpeg -i %s -vf %s -af %s -ss %.2f -t %d -c:v libx264 -crf 18 -preset slow -c:a aac -b:a 192k -y %s",
-			videoPath, vfade, afade, startTime, clipDuration, tempFile)
+		cmd := []string{"ffmpeg", "-i", videoPath, "-vf", vfade, "-af", afade, "-ss", fmt.Sprintf("%.2f", startTime), "-t", fmt.Sprintf("%d", clipDuration), "-c:v", "libx264", "-crf", "18", "-preset", "slow", "-c:a", "aac", "-b:a", "192k", "-y", tempFile}
 
 		if err := runCommand(cmd); err != nil {
 			fmt.Println("Error creating clip:", err)
@@ -120,7 +117,7 @@ func main() {
 		fileList.WriteString(fmt.Sprintf("file '%s'\n", tempFile))
 	}
 
-	cmd := fmt.Sprintf("ffmpeg -f concat -safe 0 -i %s -c copy -y %s", mergeFile, outputFile)
+	cmd := []string{"ffmpeg", "-f", "concat", "-safe", "0", "-i", mergeFile, "-c", "copy", "-y", outputFile}
 	if err := runCommand(cmd); err != nil {
 		fmt.Println("Error merging clips:", err)
 		goto clean
