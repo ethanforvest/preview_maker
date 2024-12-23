@@ -37,7 +37,7 @@ func getVideoDuration(videoPath string) (float64, error) {
 }
 
 var args struct {
-	File       string  `arg:"positional" help:"The File To Process"`
+	File       string  `arg:"positional,required" help:"The File To Process"`
 	TimeStamps []uint8 `arg:"-t" help:"The TimeStamps To Process ex: -t 10 20 70 (10% 20% 70%) of the file"`
 	Duration   int     `default:"10" arg:"-d" help:"The Duration of each clip in seconds"`
 }
