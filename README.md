@@ -35,7 +35,7 @@ go build . -o preview
 ## Usage
 
 ```sh
-./preview_maker <video-file> -t <timestamps> -d <duration>
+./preview <video-file> -t <timestamps> -d <duration>
 ```
 
 ### Arguments
@@ -47,7 +47,7 @@ go build . -o preview
 ### Example
 
 ```sh
-./preview_maker myvideo.mp4 -t 10 50 90 -d 5
+./preview myvideo.mp4 -t 10 50 90 -d 5
 ```
 
 This command generates three preview clips of 5 seconds each at 10%, 50%, and 90% of the video duration and merges them into a single output file.
