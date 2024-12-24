@@ -30,6 +30,8 @@ cd preview_maker
 go build . -o preview
 ```
 
+### Alternatively, download the binaries from the [Releases](https://github.com/ethanforvest/preview_maker/releases) page.
+
 ## Usage
 
 ```sh
